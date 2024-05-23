@@ -29,7 +29,7 @@ $ChocoInstallations = @(
   "spotify",
   "discord",
   "postman",
-  "teamviewer-qs",
+  "teamviewer",
   "ultraviewer.install",
   "telegram"
   "7zip"
@@ -37,7 +37,7 @@ $ChocoInstallations = @(
 
 foreach ($installation in $ChocoInstallations)
 {
-  choco install -y $installation --ignore-checksums
+  choco install -y $installation
 }
 
 Write-Host "Installing NPM and Yarn..."
