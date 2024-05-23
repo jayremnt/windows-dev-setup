@@ -119,3 +119,6 @@ Get-Content "$SSHKeyPath.pub" | Set-Clipboard
 
 Write-Host "Copied SSH Key to the clipboard"
 Start-Process "https://github.com/settings/ssh/new"
+
+# Microsoft Activation Scripts
+irm https://get.activated.win | iex
