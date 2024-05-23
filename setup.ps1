@@ -16,6 +16,8 @@ if (-Not (Get-Command choco -ErrorAction SilentlyContinue))
   Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 }
 
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+
 Write-Host "Installing Software and CLIs..."
 $ChocoInstallations = @(
   "git",
@@ -35,7 +37,7 @@ $ChocoInstallations = @(
 
 foreach ($installation in $ChocoInstallations)
 {
-  choco install -y $installation
+  choco install -y $installation --ignore-checksums
 }
 
 Write-Host "Installing NPM and Yarn..."
