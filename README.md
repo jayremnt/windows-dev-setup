@@ -8,7 +8,7 @@ some software, tools, and CLIs on my new Windows.
 Open **PowerShell** with _**administrative privileges**_ and execute:
 
 ```powershell
-Invoke-WebRequest -Uri "https://github.com/jayremnt/windows-dev-setup/raw/main/setup.ps1" -UseBasicParsing | Invoke-Expression
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/jayremnt/windows-dev-setup/master/setup.ps1" -UseBasicParsing | Invoke-Expression
 ```
 
 ## What's inside?
