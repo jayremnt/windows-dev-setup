@@ -23,7 +23,6 @@ $ChocoInstallations = @(
   "github"
   "nvm",
   "docker-desktop",
-  "jetbrainstoolbox",
   "googlechrome",
   "spotify",
   "discord",
@@ -81,6 +80,21 @@ catch
 {
   Write-Host "Failed to install League of Legends: $_"
 }
+
+Write-Host "Installing Jetbrains Toolbox..."
+$JetbrainsToolboxDownloadURL = "https://download-cdn.jetbrains.com/toolbox/jetbrains-toolbox-2.3.1.31116.exe"
+$JetbrainsToolboxFilePath = [System.IO.Path]::Combine($DownloadsPath, 'jetbrains-toolbox.exe')
+
+try
+{
+  Invoke-WebRequest -Uri $JetbrainsToolboxDownloadURL -OutFile $JetbrainsToolboxFilePath
+  Start-Process -FilePath $JetbrainsToolboxFilePath
+}
+catch
+{
+  Write-Host "Failed to install jetbrains Toolbox: $_"
+}
+
 
 Write-Host "Generating SSH Key..."
 $SSHKeyPath = [System.IO.Path]::Combine($env:USERPROFILE, '.ssh', 'id_ed25519')
