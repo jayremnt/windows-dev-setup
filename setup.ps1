@@ -24,6 +24,7 @@ $ChocoInstallations = @(
   "gh",
   "github"
   "nvm",
+  "python",
   "docker-desktop",
   "googlechrome",
   "spotify",
@@ -35,9 +36,9 @@ $ChocoInstallations = @(
   "7zip"
 )
 
-foreach ($installation in $ChocoInstallations)
+foreach ($Installation in $ChocoInstallations)
 {
-  choco install -y $installation
+  choco install -y $Installation
 }
 
 Write-Host "Installing NPM and Yarn..."
@@ -48,55 +49,63 @@ npm i yarn -g
 # Adobe Creative Cloud, just open the URL
 # TODO: Why is it not opening the URL?
 Write-Host "Opening Adobe Creative Cloud Download URL..."
-$adobeCreativeCloudInstallationURL = "https://creativecloud.adobe.com/apps/download/creative-cloud"
+$AdobeCreativeCloudInstallationURL = "https://creativecloud.adobe.com/apps/download/creative-cloud"
 
-Start-Process $adobeCreativeCloudInstallationURL
+Start-Process $AdobeCreativeCloudInstallationURL
+
+# Install some software
+function Install-Software
+{
+  param (
+    [string]$DownloadURL,
+    [string]$FileName,
+    [string]$SoftwareName
+  )
+
+  $FilePath = [System.IO.Path]::Combine($DownloadsPath, $FileName)
+
+  Write-Host "Installing $SoftwareName..."
+  try
+  {
+    Invoke-WebRequest -Uri $DownloadURL -OutFile $FilePath
+    Start-Process -FilePath $FilePath
+  }
+  catch
+  {
+    Write-Host "Failed to install $SoftwareName : $_"
+  }
+}
+
+$Softwares = @(
+  @{
+    DownloadURL = "https://lol.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.vn2.exe"
+    FileName = "Install League of Legends vn2.exe"
+    Name = "League of Legends"
+  },
+  @{
+    DownloadURL = "https://download-cdn.jetbrains.com/toolbox/jetbrains-toolbox-2.3.1.31116.exe"
+    FileName = "jetbrains-toolbox-2.3.1.31116.exe"
+    Name = "Jetbrains Toolbox"
+  },
+  # TODO: Sometimes it shows - Failed to install Visual Studio : The underlying connection was closed: Could not establish trust relationship for the SSL/TLS secure channel.
+  @{
+    DownloadURL = "https://c2rsetup.officeapps.live.com/c2r/downloadVS.aspx?sku=community&channel=Release&version=VS2022&source=VSLandingPage"
+    FileName = "VisualStudioSetup.exe"
+    Name = "Visual Studio"
+  }
+)
+
+foreach ($Software in $Softwares)
+{
+  Install-Software -DownloadURL $Software.DownloadURL -FileName $Software.FileName -SoftwareName $Software.Name
+}
 
 Write-Host "Installing EVKey..."
-$EVKeyZipDownloadUrl = "https://github.com/lamquangminh/EVKey/releases/download/Release/EVKey.zip"
-$EVKeyZipFilePath = [System.IO.Path]::Combine($DownloadsPath, 'EVKey.zip')
-$EVKeyExtractPath = [System.IO.Path]::Combine($DownloadsPath, 'EVKey')
-$EVKeyEXEPath = [System.IO.Path]::Combine($DownloadsPath, 'EVKey', 'EVKey64.exe')
+$EVKeyProjectPath = [System.IO.Path]::Combine($DownloadsPath, 'EVKey')
+$EVKeyExePath = [System.IO.Path]::Combine($DownloadsPath, 'EVKey', 'release', 'EVKey64.exe')
 
-try
-{
-  Invoke-WebRequest -Uri $EVKeyZipDownloadUrl -OutFile $EVKeyZipFilePath
-  Add-Type -AssemblyName System.IO.Compression.FileSystem
-  [System.IO.Compression.ZipFile]::ExtractToDirectory($EVKeyZipFilePath, $EVKeyExtractPath)
-  Start-Process -FilePath $EVKeyEXEPath
-}
-catch
-{
-  Write-Host "Failed to install EVKey: $_"
-}
-
-Write-Host "Installing League of Legends..."
-$LOLDownloadURL = "https://lol.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.vn2.exe"
-$LOLFilePath = [System.IO.Path]::Combine($DownloadsPath, 'Install League of Legends vn2.exe')
-
-try
-{
-  Invoke-WebRequest -Uri $LOLDownloadURL -OutFile $LOLFilePath
-  Start-Process -FilePath $LOLFilePath
-}
-catch
-{
-  Write-Host "Failed to install League of Legends: $_"
-}
-
-Write-Host "Installing Jetbrains Toolbox..."
-$JetbrainsToolboxDownloadURL = "https://download-cdn.jetbrains.com/toolbox/jetbrains-toolbox-2.3.1.31116.exe"
-$JetbrainsToolboxFilePath = [System.IO.Path]::Combine($DownloadsPath, 'jetbrains-toolbox-2.3.1.31116.exe')
-
-try
-{
-  Invoke-WebRequest -Uri $JetbrainsToolboxDownloadURL -OutFile $JetbrainsToolboxFilePath
-  Start-Process -FilePath $JetbrainsToolboxFilePath
-}
-catch
-{
-  Write-Host "Failed to install jetbrains Toolbox: $_"
-}
+git clone "https://github.com/lamquangminh/EVKey.git" $EVKeyProjectPath
+Start-Process -FilePath $EVKeyExePath
 
 Write-Host "Generating SSH Key..."
 $SSHKeyPath = [System.IO.Path]::Combine($env:USERPROFILE, '.ssh', 'id_ed25519')
